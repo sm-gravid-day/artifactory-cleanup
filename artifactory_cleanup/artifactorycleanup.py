@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
+from operator import itemgetter
 from typing import List, Iterator, Optional
 
 from attr import dataclass
@@ -56,7 +57,7 @@ class ArtifactoryCleanup:
 
                 # Filter artifacts
                 with block_ctx_mgr("Filter results"):
-                    artifacts_to_remove = policy.filter(artifacts)
+                    artifacts_to_remove = sorted(policy.filter(artifacts), key=itemgetter('repo', 'path', 'name'))
                 print(f"Found {len(artifacts_to_remove)} artifacts AFTER filtering")
 
                 # Delete artifacts
