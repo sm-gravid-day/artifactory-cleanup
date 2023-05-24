@@ -43,7 +43,7 @@ class RuleForDocker(Rule):
         """
         for artifact in artifacts:
             # already done it or it's just a folder
-            if "name" not in artifact or artifact["name"] != self.MANIFEST_FILENAME:
+            if "name" not in artifact or not artifact["name"].endswith("manifest.json"):
                 continue
 
             artifact["path"], docker_tag = artifact["path"].rsplit("/", 1)
@@ -76,7 +76,7 @@ class RuleForDocker(Rule):
                 artifact["size"] = images_sizes.get(image_key, 0)
 
     def aql_add_filter(self, filters):
-        filters.append({"name": {"$match": self.MANIFEST_FILENAME}})
+        filters.append({"$or": [{"name": {"$match": "manifest.json"}}, {"name": {"$match": "list.manifest.json"}}]})
         return filters
 
     def filter(self, artifacts):
